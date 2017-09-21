@@ -4,26 +4,22 @@ module.exports = function(grunt){
 		compass: {
 			dist: {
 				options: {
-					sassDir: '.',
-					cssDir: '.'
+					sassDir: './src',
+					cssDir: './dist',
+					outputStyle: 'compressed'
 				}
 			}
 		},
 		browserify: {
 			options: {
 				debug: true,
-				// transform: ['babelify'],
-				transform: [
-					'brfs'
-				],
 				extensions: '.js',
 				browserifyOptions: {
 					standalone: 'windowbar'
 				}
 			},
 			default: {
-				src: ['index.js'],
-				dest: 'demo/index.js'
+				files: { 'dist/index.js': ['src/index.js'] }
 			}
 		},
 		watch: {
@@ -32,7 +28,7 @@ module.exports = function(grunt){
 				tasks: ['compass']
 			},
 			browserify: {
-				files: ['./*.js','./*.html'],
+				files: ['**/*.js'],
 				tasks: ['browserify']
 			}
 		}

@@ -1,106 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.windowbar = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var EventEmitter = require('events');
-
-var path = require('path');
-var defaultCss = require('defaultcss');
-var domify = require('domify');
-var classes = require('component-classes');
-
-var ALT = 18;
-
-var css = "/* line 1, style.scss */\n.windowbar {\n  display: flex;\n  box-sizing: padding-box;\n}\n/* line 5, style.scss */\n.windowbar * {\n  box-sizing: inherit;\n}\n/* line 7, style.scss */\n.windowbar::after {\n  content: ' ';\n  display: table;\n  clear: both;\n}\n/* line 13, style.scss */\n.windowbar.draggable {\n  -webkit-app-region: drag;\n}\n/* line 16, style.scss */\n.windowbar.draggable .windowbar-minimize,\n.windowbar.draggable .windowbar-maximize,\n.windowbar.draggable .windowbar-close {\n  -webkit-app-region: no-drag;\n}\n/* line 23, style.scss */\n.windowbar .windowbar-controls::after {\n  content: ' ';\n  display: table;\n  clear: both;\n}\n/* line 30, style.scss */\n.windowbar.wb-mac {\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 3px;\n}\n/* line 35, style.scss */\n.windowbar.wb-mac:not(.transparent) {\n  background-color: #e5e5e5;\n}\n/* line 36, style.scss */\n.windowbar.wb-mac.unfocused:not(.transparent) {\n  background-color: #f6f6f6;\n}\n/* line 40, style.scss */\n.windowbar.wb-mac .windowbar-controls:hover svg {\n  opacity: 1 !important;\n}\n/* line 47, style.scss */\n.windowbar.wb-mac.alt svg.fullscreen-svg {\n  display: none;\n}\n/* line 51, style.scss */\n.windowbar.wb-mac.alt svg.maximize-svg {\n  display: block !important;\n}\n/* line 57, style.scss */\n.windowbar.wb-mac.fullscreen svg.fullscreen-svg {\n  display: none;\n}\n/* line 61, style.scss */\n.windowbar.wb-mac.fullscreen svg.exit-fullscreen-svg {\n  display: block !important;\n}\n/* line 66, style.scss */\n.windowbar.wb-mac .windowbar-close,\n.windowbar.wb-mac .windowbar-minimize,\n.windowbar.wb-mac .windowbar-maximize {\n  float: left;\n  width: 10px;\n  height: 10px;\n  border-radius: 50%;\n  margin: 6px 4px;\n  line-height: 0;\n}\n/* line 77, style.scss */\n.windowbar.wb-mac .windowbar-close {\n  border: 1px solid #e94343;\n  background-color: #ff5d5b;\n  margin-left: 6px;\n}\n/* line 82, style.scss */\n.windowbar.wb-mac .windowbar-close:active {\n  border-color: #b43737;\n  background-color: #c64845;\n}\n/* line 87, style.scss */\n.windowbar.wb-mac .windowbar-close svg {\n  width: 6px;\n  height: 6px;\n  margin-top: 2px;\n  margin-left: 2px;\n  opacity: 0;\n}\n/* line 96, style.scss */\n.windowbar.wb-mac .windowbar-minimize {\n  border: 1px solid #e5a03a;\n  background-color: #ffbc45;\n}\n/* line 100, style.scss */\n.windowbar.wb-mac .windowbar-minimize:active {\n  border-color: #b07b2e;\n  background-color: #c38e34;\n}\n/* line 105, style.scss */\n.windowbar.wb-mac .windowbar-minimize svg {\n  width: 8px;\n  height: 8px;\n  margin-top: 1px;\n  margin-left: 1px;\n  opacity: 0;\n}\n/* line 114, style.scss */\n.windowbar.wb-mac .windowbar-maximize {\n  border: 1px solid #13ad3e;\n  background-color: #00c94f;\n}\n/* line 118, style.scss */\n.windowbar.wb-mac .windowbar-maximize:active {\n  border-color: #138532;\n  background-color: #009a3c;\n}\n/* line 123, style.scss */\n.windowbar.wb-mac .windowbar-maximize svg.fullscreen-svg {\n  width: 6px;\n  height: 6px;\n  margin-top: 2px;\n  margin-left: 2px;\n  opacity: 0;\n}\n/* line 131, style.scss */\n.windowbar.wb-mac .windowbar-maximize svg.exit-fullscreen-svg {\n  width: 10px;\n  height: 10px;\n  margin-top: 0;\n  margin-left: 0;\n  opacity: 0;\n  display: none;\n}\n/* line 140, style.scss */\n.windowbar.wb-mac .windowbar-maximize svg.maximize-svg {\n  width: 8px;\n  height: 8px;\n  margin-top: 1px;\n  margin-left: 1px;\n  opacity: 0;\n  display: none;\n}\n/* line 150, style.scss */\n.windowbar.wb-mac.unfocused .windowbar-controls:not(:hover) > * {\n  background-color: #dcdcdc;\n  border-color: #d1d1d1;\n}\n/* line 157, style.scss */\n.windowbar.wb-win {\n  justify-content: flex-end;\n  padding: 0;\n}\n/* line 161, style.scss */\n.windowbar.wb-win:not(.transparent) {\n  background-color: #fff;\n}\n/* line 163, style.scss */\n.windowbar.wb-win.unfocused .windowbar-controls:not(:hover) svg {\n  opacity: 60%;\n}\n/* line 167, style.scss */\n.windowbar.wb-win .windowbar-minimize,\n.windowbar.wb-win .windowbar-maximize,\n.windowbar.wb-win .windowbar-close {\n  float: left;\n  width: 45px;\n  height: 29px;\n  margin: 0 0 1px 1px;\n  text-align: center;\n  line-height: 29px;\n  -webkit-transition: background-color .2s;\n  -moz-transition: background-color .2s;\n  -ms-transition: background-color .2s;\n  -o-transition: background-color .2s;\n  transition: background-color .2s;\n}\n/* line 183, style.scss */\n.windowbar.wb-win .windowbar-minimize svg,\n.windowbar.wb-win .windowbar-maximize svg,\n.windowbar.wb-win .windowbar-close svg {\n  width: 10px;\n  height: 10px;\n}\n/* line 189, style.scss */\n.windowbar.wb-win .windowbar-close svg polygon {\n  -webkit-transition: fill .2s;\n  -moz-transition: fill .2s;\n  -ms-transition: fill .2s;\n  -o-transition: fill .2s;\n  transition: fill .2s;\n}\n/* line 198, style.scss */\n.windowbar.wb-win.fullscreen .windowbar-minimize,\n.windowbar.wb-win.fullscreen .windowbar-maximize,\n.windowbar.wb-win.fullscreen .windowbar-close {\n  height: 21px;\n  line-height: 21px;\n}\n/* line 206, style.scss */\n.windowbar.wb-win:not(.fullscreen) .windowbar-maximize svg.unmaximize-svg {\n  display: none;\n}\n/* line 207, style.scss */\n.windowbar.wb-win.fullscreen .windowbar-maximize svg.maximize-svg {\n  display: none;\n}\n/* line 209, style.scss */\n.windowbar.wb-win .windowbar-minimize:hover,\n.windowbar.wb-win .windowbar-maximize:hover {\n  background-color: #E5E5E5;\n}\n/* line 213, style.scss */\n.windowbar.wb-win .windowbar-close:hover {\n  background-color: #E81123;\n}\n/* line 216, style.scss */\n.windowbar.wb-win .windowbar-close:hover svg polygon {\n  fill: #fff;\n}\n";
-var html = "<div class=\"windowbar wb-mac\">\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<polygon fill=\"#860006\" points=\"6,1 6,0 5,0 3,2 1,0 0,0 0,1 2,3 0,5 0,6 1,6 3,4 5,6 6,6 6,5 4,3\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 7 2\">\n\t\t\t\t<rect fill=\"#9d5615\" width=\"7\" height=\"2\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg class=\"fullscreen-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<path fill=\"#006413\" d=\"M0,1.4v3.8c0.4,0,0.8,0.3,0.8,0.8h3.8L0,1.4z\"/>\n\t\t\t\t<path fill=\"#006413\" d=\"M6,4.6V0.8C5.6,0.8,5.2,0.4,5.2,0H1.4L6,4.6z\"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"exit-fullscreen-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<path fill=\"#006413\" d=\"M3,0v2.5c0.3,0,0.5,0.2,0.5,0.5H6L3,0z\"/>\n\t\t\t\t<path fill=\"#006413\" d=\"M3,6V3.5C2.7,3.5,2.5,3.3,2.5,3H0L3,6z\"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"maximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 7.9 7.9\">\n\t\t\t\t<polygon fill=\"#006413\" points=\"7.9,4.5 7.9,3.4 4.5,3.4 4.5,0 3.4,0 3.4,3.4 0,3.4 0,4.5 3.4,4.5 3.4,7.9 4.5,7.9 4.5,4.5\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n\n<div class=\"windowbar wb-win\">\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 1\">\n\t\t\t\t<rect fill=\"#000000\" width=\"10\" height=\"1\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg class=\"maximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<path fill=\"#000000\" d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z \"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"unmaximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<mask id=\"Mask\">\n\t\t\t\t\t<rect fill=\"#FFFFFF\" width=\"10\" height=\"10\"></rect>\n\t\t\t\t\t<path fill=\"#000000\" d=\"M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z\"/>\n\t\t\t\t\t<path fill=\"#000000\" d=\"M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z\"/>\n\t\t\t\t</mask>\n\t\t\t\t<path fill=\"#000000\" d=\"M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z\" mask=\"url(#Mask)\"/>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 12 12\">\n\t\t\t\t<polygon fill=\"#000000\" points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n";
-
-class Windowbar extends EventEmitter {
-	constructor(options = {}){
-		super();
-		// Get Options
-		this.options = {};
-		this.options.style = options.style;
-		this.options.transparent = options.transparent;
-		this.options.draggable = "draggable" in options ? options.draggable : true;
-		this.options.dblClickable = "dblClickable" in options ? options.dblClickable : true;
-		
-		// Set proper style
-		if (!['mac','win','generic'].includes(this.options.style)){
-			if (this.options.style === 'darwin' || platform.system === 'darwin') this.options.style = 'mac';
-			else if (this.options.style === 'win32' || platform.system === 'win32') this.options.style = 'win';
-			else this.options.style = 'generic';
-		}
-		
-		// Create Windowbar element
-		if (this.options.style === 'mac' || this.options.style === 'darwin') this.element = domify(html, document).querySelector('.wb-mac');
-		else if (this.options.style === 'win' || this.options.style === 'win32') this.element = domify(html, document).querySelector('.wb-win');
-		else if (this.options.style === 'generic') this.element = domify(html, document);
-		
-		// Register buttons
-		this.minimizeButton = this.element.querySelector('.windowbar-minimize');
-		this.maximizeButton = this.element.querySelector('.windowbar-maximize');
-		this.closeButton = this.element.querySelector('.windowbar-close');
-		
-		// Draggable
-		if (this.options.draggable) classes(this.element).add('draggable');
-		// Transparent
-		if (this.options.transparent) classes(this.element).add('transparent');
-		
-		// Add click events
-		this.element.addEventListener('dblclick', event => this.onDblClick(event));
-		this.minimizeButton.addEventListener('click', event => this.clickMinimize(event));
-		this.maximizeButton.addEventListener('click', event => this.clickMaximize(event));
-		this.closeButton.addEventListener('click', event => this.clickClose(event));
-		
-		// Show maximize svg while holding alt (mac only)
-		if (this.options.style === 'mac'){
-			var self = this;
-			window.addEventListener('keydown', function(e) {
-				if(e.keyCode === ALT && !classes(self.element).has('fullscreen')) classes(self.element).add('alt');
-			});
-			window.addEventListener('keyup', function(e) {
-				if(e.keyCode === ALT) classes(self.element).remove('alt');
-			});
-		}
-	}
-	
-	clickClose(e){ this.emit('close', e); };
-	
-	clickMinimize(e){ this.emit('minimize', e); };
-	
-	clickMaximize(e){
-		if (this.options.style === 'mac'){
-			if (e.altKey && !classes(this.element).has('fullscreen')){ this.emit('maximize', e); }
-			else {
-				classes(this.element).toggle('fullscreen');
-				this.emit('fullscreen', e);
-			}
-		} else {
-			classes(this.element).toggle('fullscreen');
-			this.emit('maximize', e);
-		}
-	};
-	
-	onDblClick(e){
-		e.preventDefault;
-		if (this.options.dblClickable && !(this.minimizeButton.contains(e.target) || this.maximizeButton.contains(e.target) || this.closeButton.contains(e.target))){
-			this.clickMaximize(e);
-			console.log('dblclick', e);
-		}
-	};
-	
-	appendTo(context = document.body){
-		//defaultCss('windowbar', css);
-		context.appendChild(this.element);
-		return this;
-	};
-	
-	destroy(){
-		parent.removeChild(this.element);
-		return this;
-	};
-}
-
-module.exports = Windowbar;
-
-},{"component-classes":2,"defaultcss":4,"domify":5,"events":6,"path":8}],2:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -293,7 +191,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-},{"component-indexof":3,"indexof":3}],3:[function(require,module,exports){
+},{"component-indexof":2,"indexof":2}],2:[function(require,module,exports){
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {
@@ -301,7 +199,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /* jshint node: true */
 'use strict';
 
@@ -379,7 +277,7 @@ module.exports = function(label, text) {
   return styleEl;
 };
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
 /**
  * Expose `parse`.
@@ -492,6 +390,8 @@ function parse(html, doc) {
 
   return fragment;
 }
+
+},{}],5:[function(require,module,exports){
 
 },{}],6:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
@@ -1211,5 +1111,115 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":7}]},{},[1])(1)
+},{"_process":7}],9:[function(require,module,exports){
+(function (process){
+var EventEmitter = require('events');
+var fs = require('fs');
+var path = require('path');
+var defaultCss = require('defaultcss');
+var domify = require('domify');
+var classes = require('component-classes');
+
+var ALT = 18;
+
+var html = function(s = ''){
+	if (s === 'mac'){
+		return `<div class="windowbar wb-mac"><div class="windowbar-controls"><div class="windowbar-close"><svg x="0px" y="0px" viewBox="0 0 6 6"><polygon fill="#860006" points="6,1 6,0 5,0 3,2 1,0 0,0 0,1 2,3 0,5 0,6 1,6 3,4 5,6 6,6 6,5 4,3"></polygon></svg></div><div class="windowbar-minimize"><svg x="0px" y="0px" viewBox="0 0 7 2"><rect fill="#9d5615" width="7" height="2"></rect></svg></div><div class="windowbar-maximize"><svg class="fullscreen-svg" x="0px" y="0px" viewBox="0 0 6 6"><path fill="#006413" d="M0,1.4v3.8c0.4,0,0.8,0.3,0.8,0.8h3.8L0,1.4z"/><path fill="#006413" d="M6,4.6V0.8C5.6,0.8,5.2,0.4,5.2,0H1.4L6,4.6z"/></svg><svg class="exit-fullscreen-svg" x="0px" y="0px" viewBox="0 0 6 6"><path fill="#006413" d="M3,0v2.5c0.3,0,0.5,0.2,0.5,0.5H6L3,0z"/><path fill="#006413" d="M3,6V3.5C2.7,3.5,2.5,3.3,2.5,3H0L3,6z"/></svg><svg class="maximize-svg" x="0px" y="0px" viewBox="0 0 7.9 7.9"><polygon fill="#006413" points="7.9,4.5 7.9,3.4 4.5,3.4 4.5,0 3.4,0 3.4,3.4 0,3.4 0,4.5 3.4,4.5 3.4,7.9 4.5,7.9 4.5,4.5"></polygon></svg></div></div></div>`;
+	} else if (s === 'win') {
+		return `<div class="windowbar wb-win"><div class="windowbar-controls"><div class="windowbar-minimize"><svg x="0px" y="0px" viewBox="0 0 10 1"><rect fill="#000000" width="10" height="1"></rect></svg></div><div class="windowbar-maximize"><svg class="maximize-svg" x="0px" y="0px" viewBox="0 0 10 10"><path fill="#000000" d="M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z "/></svg><svg class="unmaximize-svg" x="0px" y="0px" viewBox="0 0 10 10"><mask id="Mask"><rect fill="#FFFFFF" width="10" height="10"></rect><path fill="#000000" d="M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z"/><path fill="#000000" d="M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z"/></mask><path fill="#000000" d="M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z" mask="url(#Mask)"/></svg></div><div class="windowbar-close"><svg x="0px" y="0px" viewBox="0 0 12 12"><polygon fill="#000000" points="12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6"></polygon></svg></div></div></div>`;
+	}
+}
+var css = function(){
+	return `.windowbar{display:flex;box-sizing:padding-box}.windowbar *{box-sizing:inherit}.windowbar::after{content:' ';display:table;clear:both}.windowbar.draggable{-webkit-app-region:drag}.windowbar.draggable .windowbar-minimize,.windowbar.draggable .windowbar-maximize,.windowbar.draggable .windowbar-close{-webkit-app-region:no-drag}.windowbar .windowbar-controls::after{content:' ';display:table;clear:both}.windowbar.wb-mac{align-items:center;justify-content:space-between;padding:0 3px}.windowbar.wb-mac:not(.transparent){background-color:#e5e5e5}.windowbar.wb-mac.unfocused:not(.transparent){background-color:#f6f6f6}.windowbar.wb-mac .windowbar-controls:hover svg{opacity:1 !important}.windowbar.wb-mac.alt:not(.fullscreen) svg.fullscreen-svg{display:none}.windowbar.wb-mac.alt:not(.fullscreen) svg.maximize-svg{display:block !important}.windowbar.wb-mac.fullscreen svg.fullscreen-svg{display:none}.windowbar.wb-mac.fullscreen svg.exit-fullscreen-svg{display:block !important}.windowbar.wb-mac .windowbar-close,.windowbar.wb-mac .windowbar-minimize,.windowbar.wb-mac .windowbar-maximize{float:left;width:10px;height:10px;border-radius:50%;margin:6px 4px;line-height:0}.windowbar.wb-mac .windowbar-close{border:1px solid #e94343;background-color:#ff5d5b;margin-left:6px}.windowbar.wb-mac .windowbar-close:active{border-color:#b43737;background-color:#c64845}.windowbar.wb-mac .windowbar-close svg{width:6px;height:6px;margin-top:2px;margin-left:2px;opacity:0}.windowbar.wb-mac .windowbar-minimize{border:1px solid #e5a03a;background-color:#ffbc45}.windowbar.wb-mac .windowbar-minimize:active{border-color:#b07b2e;background-color:#c38e34}.windowbar.wb-mac .windowbar-minimize svg{width:8px;height:8px;margin-top:1px;margin-left:1px;opacity:0}.windowbar.wb-mac .windowbar-maximize{border:1px solid #13ad3e;background-color:#00c94f}.windowbar.wb-mac .windowbar-maximize:active{border-color:#138532;background-color:#009a3c}.windowbar.wb-mac .windowbar-maximize svg.fullscreen-svg{width:6px;height:6px;margin-top:2px;margin-left:2px;opacity:0}.windowbar.wb-mac .windowbar-maximize svg.exit-fullscreen-svg{width:10px;height:10px;margin-top:0;margin-left:0;opacity:0;display:none}.windowbar.wb-mac .windowbar-maximize svg.maximize-svg{width:8px;height:8px;margin-top:1px;margin-left:1px;opacity:0;display:none}.windowbar.wb-mac.unfocused .windowbar-controls:not(:hover)>*{background-color:#dcdcdc;border-color:#d1d1d1}.windowbar.wb-win{justify-content:flex-end;padding:0}.windowbar.wb-win:not(.transparent){background-color:#fff}.windowbar.wb-win.unfocused .windowbar-controls:not(:hover) svg{opacity:60%}.windowbar.wb-win .windowbar-minimize,.windowbar.wb-win .windowbar-maximize,.windowbar.wb-win .windowbar-close{float:left;width:45px;height:29px;margin:0 0 1px 1px;text-align:center;line-height:29px;-webkit-transition:background-color .2s;-moz-transition:background-color .2s;-ms-transition:background-color .2s;-o-transition:background-color .2s;transition:background-color .2s}.windowbar.wb-win .windowbar-minimize svg,.windowbar.wb-win .windowbar-maximize svg,.windowbar.wb-win .windowbar-close svg{width:10px;height:10px}.windowbar.wb-win .windowbar-close svg polygon{-webkit-transition:fill .2s;-moz-transition:fill .2s;-ms-transition:fill .2s;-o-transition:fill .2s;transition:fill .2s}.windowbar.wb-win.fullscreen .windowbar-minimize,.windowbar.wb-win.fullscreen .windowbar-maximize,.windowbar.wb-win.fullscreen .windowbar-close{height:21px;line-height:21px}.windowbar.wb-win:not(.fullscreen) .windowbar-maximize svg.unmaximize-svg{display:none}.windowbar.wb-win.fullscreen .windowbar-maximize svg.maximize-svg{display:none}.windowbar.wb-win .windowbar-minimize:hover,.windowbar.wb-win .windowbar-maximize:hover{background-color:#E5E5E5}.windowbar.wb-win .windowbar-close:hover{background-color:#E81123}.windowbar.wb-win .windowbar-close:hover svg polygon{fill:#fff}`;
+}
+
+class Windowbar extends EventEmitter {
+	constructor(options = {}){
+		super();
+		// Get Options
+		this.options = {};
+		this.options.style = options.style;
+		this.options.transparent = options.transparent;
+		this.options.draggable = "draggable" in options ? options.draggable : true;
+		this.options.dblClickable = "dblClickable" in options ? options.dblClickable : true;
+		
+		// Set proper style
+		if (!['mac','win','generic'].includes(this.options.style)){
+			if (this.options.style === 'darwin' || process.platform === 'darwin') this.options.style = 'mac';
+			else if (this.options.style === 'win32' || process.platform === 'win32') this.options.style = 'win';
+			else this.options.style = 'generic';
+		}
+		
+		// Create Windowbar element
+		this.element = domify(html(this.options.style), document);
+		
+		// Register buttons
+		this.minimizeButton = this.element.querySelector('.windowbar-minimize');
+		this.maximizeButton = this.element.querySelector('.windowbar-maximize');
+		this.closeButton = this.element.querySelector('.windowbar-close');
+		
+		// Draggable
+		if (this.options.draggable) classes(this.element).add('draggable');
+		// Transparent
+		if (this.options.transparent) classes(this.element).add('transparent');
+		
+		// Add click events
+		this.element.addEventListener('dblclick', event => this.onDblClick(event));
+		this.minimizeButton.addEventListener('click', event => this.clickMinimize(event));
+		this.maximizeButton.addEventListener('click', event => this.clickMaximize(event));
+		this.closeButton.addEventListener('click', event => this.clickClose(event));
+		
+		// Show maximize svg while holding alt (mac only)
+		if (this.options.style === 'mac'){
+			var self = this;
+			window.addEventListener('keydown', function(e){
+				if(e.keyCode === ALT) classes(self.element).add('alt');
+			});
+			window.addEventListener('keyup', function(e){
+				if(e.keyCode === ALT) classes(self.element).remove('alt');
+			});
+		}
+	}
+	
+	clickClose(e){ this.emit('close', e); };
+	
+	clickMinimize(e){ this.emit('minimize', e); };
+	
+	clickMaximize(e){
+		if (this.options.style === 'mac'){
+			if (e.altKey && !classes(this.element).has('fullscreen')) this.emit('maximize', e);
+			else {
+				classes(this.element).toggle('fullscreen');
+				this.emit('fullscreen', e);
+			}
+		} else {
+			classes(this.element).toggle('fullscreen');
+			this.emit('maximize', e);
+		}
+	};
+	
+	onDblClick(e){
+		e.preventDefault;
+		if (this.options.dblClickable && !(this.minimizeButton.contains(e.target) || this.maximizeButton.contains(e.target) || this.closeButton.contains(e.target))){
+			this.clickMaximize(e);
+			console.log('dblclick', e);
+		}
+	};
+	
+	appendTo(context = document.body){
+		defaultCss('windowbar', css());
+		context.appendChild(this.element);
+		return this;
+	};
+	
+	destroy(){
+		parent.removeChild(this.element);
+		return this;
+	};
+}
+
+module.exports = Windowbar;
+
+}).call(this,require('_process'))
+},{"_process":7,"component-classes":1,"defaultcss":3,"domify":4,"events":6,"fs":5,"path":8}]},{},[9])(9)
 });

@@ -2,20 +2,21 @@
 
 Emulate OS X and Windows 10 window title bar. Forked from [kapetan/titlebar](https://github.com/kapetan/titlebar). See the [demo](http://katacarbix.xyz/windowbar/demo/index.html).
 
-~~```npm install windowbar```~~
+`npm install windowbar`
 
 # Usage
 
-Used with browserify, electron, or a similar environment. Use with plain javascript:
+For use with browserify, electron, or a similar environment. Plain javascript:
 
 ```javascript
 var windowbar = require('windowbar');
 
-var t = new windowbar({'style':'mac'})
-// Bind to any of the events Windowbar emits
-t.on('close', console.log('close'))
-// Provides a method to attach to DOM
-t.appendTo(document.body);
+var wb = new windowbar({'style':'mac', 'dblClickable':false})
+	.on('close', console.log('close'))
+	.on('minimize', console.log('minimize'))
+	.on('fullscreen', console.log('fullscreen'))
+	.on('maximize', console.log('maximize'))
+	.appendTo(document.body);
 ```
 
 The returned instance emits four events: `close`, `minimize`, `fullscreen`, and `maximize`. Note: `maximize` can also be triggered in the Mac style by alt-clicking fullscreen.
@@ -28,6 +29,4 @@ The initializer function accepts an options object with these properties:
 
 # To do
 
-* Make React compatible version
 * Add generic style (similar to [hyper](http://hyper.is))
-* Publish to npm

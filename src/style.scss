@@ -43,7 +43,7 @@
 			}
 		}
 
-		&.alt {
+		&.alt:not(.fullscreen) {
 			svg.fullscreen-svg {
 				display: none;
 			}
