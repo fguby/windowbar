@@ -1,6 +1,6 @@
 {
 	"name": "windowbar",
-	"version": "1.6.2",
+	"version": "1.6.3",
 	"description": "Emulated window controls",
 	"main": "index.js",
 	"scripts": {
