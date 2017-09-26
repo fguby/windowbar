@@ -35,6 +35,14 @@
 			.on('maximize', log('maximize'))
 			.appendTo(document.body);
 		
+		document.write('<br>');
+		
+		var ww = new windowbar({'style':'win', 'dark':true, 'draggable':false, 'dblClickable':true})
+			.on('close', log('close'))
+			.on('minimize', log('minimize'))
+			.on('maximize', log('maximize'))
+			.appendTo(document.body);
+	
 	</script>
 </body>
 </html>

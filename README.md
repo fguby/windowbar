@@ -26,6 +26,7 @@ The initializer function accepts an options object with these properties:
 * `draggable` (default `true`): Disable the [-webkit-app-region](https://developer.chrome.com/apps/app_window) CSS property on the root element. Allows frameless windows to be dragged in an `electron` application.
 * `dblClickable` (default `true`): Allows double clicking windowbar to trigger maximize event.
 * `style` (defaults to current OS, or `generic` if unrecognized): Possible values are `mac`, `win`, or `generic`.
+* `dark` (default `false`): Dark theme for Windows.
 
 # To do
 

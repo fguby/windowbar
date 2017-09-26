@@ -1,6 +1,6 @@
 .windowbar {
 	display: flex;
-	box-sizing: padding-box;
+	box-sizing: content-box;
 	
 	* { box-sizing: inherit; }
 	
@@ -208,13 +208,23 @@
 
 		.windowbar-minimize:hover,
 		.windowbar-maximize:hover {
-			background-color: #E5E5E5;
+			background-color: rgba(127,127,127, 0.2);
 		}
 		.windowbar-close:hover {
 			background-color: #E81123;
 			
 			svg polygon {
 				fill: #fff;
+			}
+		}
+		
+		&.dark {
+			&:not(.transparent) { background-color: #1f1f1f; }
+			
+			svg {
+				> rect, > polygon, > path {
+					fill: #fff;
+				}
 			}
 		}
 	}
