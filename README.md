@@ -1,6 +1,8 @@
 # windowbar
 
-Emulate OS X and Windows 10 window title bar. Forked from [kapetan/titlebar](https://github.com/kapetan/titlebar). See the [demo](http://katacarbix.xyz/windowbar/demo/index.html).
+Emulate OS X and Windows 10 window title bar. Based on [kapetan/titlebar](https://github.com/kapetan/titlebar). See the [demo](http://katacarbix.xyz/windowbar/demo/index.html).
+
+NOTE: A React component version is available [here](https://github.com/katacarbix/windowbar/tree/windowbar-react)
 
 `npm install windowbar`
 
