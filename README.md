@@ -1,10 +1,10 @@
 # windowbar
 
-Emulate OS X and Windows 10 window title bar. Based on [kapetan/titlebar](https://github.com/kapetan/titlebar). See the [demo](http://katacarbix.xyz/windowbar/demo/index.html).
-
-NOTE: A React component version is available [here](https://github.com/katacarbix/windowbar/tree/windowbar-react).
+Emulate window title bar in three different styles. See the [demo](http://katacarbix.xyz/windowbar/demo/index.html).
 
 `npm install windowbar`
+
+NOTE: A React component version is available [here](https://github.com/katacarbix/windowbar/tree/windowbar-react).
 
 # Usage
 
@@ -23,13 +23,19 @@ var wb = new windowbar({'style':'mac', 'dblClickable':false})
 
 The returned instance emits four events: `close`, `minimize`, `maximize`, and `fullscreen`. Note: `maximize` can also be triggered in the Mac style by alt-clicking fullscreen.
 
-The initializer function accepts an options object with these properties:
+The constructor accepts an options object with these properties:
 
-* `draggable` (default `true`): Disable the [-webkit-app-region](https://developer.chrome.com/apps/app_window) CSS property on the root element. Allows frameless windows to be dragged in an `electron` application.
+* `dark` (default `false`): Dark theme.
 * `dblClickable` (default `true`): Allows double clicking windowbar to trigger maximize event.
-* `style` (defaults to current OS, or `generic` if unrecognized): Possible values are `mac`, `win`, or `generic`.
-* `dark` (default `false`): Dark theme for Windows.
+* `draggable` (default `true`): Enables/disables the [-webkit-app-region](https://developer.chrome.com/apps/app_window) CSS property on the root element. Allows frameless windows to be dragged in an `electron` application.
+* `fixed` (default `false`): Affixes the windowbar at the top of the page.
+* `style` (defaults to current OS, or `default` if unrecognized): Possible values are `mac`, `win`, or `default`.
+* `title`: Sets the title. Can be changed later with `updateTitle(t)`.
+* `transparent` (default `false`): Transparent background for an overlayed effect.
+
+
 
 # To do
 
-* Add generic style (similar to [hyper](http://hyper.is))
+* Update react component
+* ~~Add default style~~

@@ -1,7 +1,7 @@
 {
 	"name": "windowbar",
-	"version": "1.6.4",
-	"description": "Emulated window controls",
+	"version": "1.7.0",
+	"description": "Emulate window title bar in three different styles.",
 	"main": "index.js",
 	"scripts": {
 		"start": "grunt",
@@ -16,25 +16,27 @@
 		"window",
 		"controls",
 		"titlebar",
-		"stoplight"
+		"stoplight",
+		"electron",
+		"browserify",
+		"ui"
 	],
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/katacarbix/windowbar/issues"
 	},
 	"homepage": "https://github.com/katacarbix/windowbar",
-	"dependencies": {
-		"brfs": "^1.4.0",
+	"dependencies": {},
+	"devDependencies": {
+		"brfs": "^2.0.2",
+		"browserify": "^16.5.1",
 		"component-classes": "^1.2.6",
 		"defaultcss": "^1.1.1",
-		"domify": "^1.3.3"
-	},
-	"devDependencies": {
-		"browserify": "^9.0.8",
-		"grunt": "^1.0.1",
+		"domify": "^1.4.0",
+		"grunt": "^1.1.0",
 		"grunt-browserify": "^5.2.0",
 		"grunt-contrib-compass": "^1.1.1",
-		"grunt-contrib-watch": "^1.0.0",
+		"grunt-contrib-watch": "^1.1.0",
 		"pre-commit-package-version": "^1.0.7"
 	}
 }

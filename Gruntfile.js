@@ -16,7 +16,8 @@ module.exports = function(grunt){
 				extensions: '.js',
 				browserifyOptions: {
 					standalone: 'windowbar'
-				}
+				},
+				transform: ['brfs']
 			},
 			default: {
 				files: { 'dist/index.js': ['src/index.js'] }
@@ -24,11 +25,11 @@ module.exports = function(grunt){
 		},
 		watch: {
 			css: {
-				files: '**/*.scss',
+				files: 'src/*.scss',
 				tasks: ['compass']
 			},
 			browserify: {
-				files: ['**/*.js'],
+				files: ['src/*.js', 'dist/*.html', 'dist/*.css'],
 				tasks: ['browserify']
 			}
 		}

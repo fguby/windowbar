@@ -1,117 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.windowbar = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (process){
-var EventEmitter = require('events');
-var fs = require('fs');
-var path = require('path');
-var defaultCss = require('defaultcss');
-var domify = require('domify');
-var classes = require('component-classes');
-
-var ALT = 18;
-
-var html = function(s = ''){
-	if (s === 'mac'){
-		return `<div class="windowbar wb-mac"><div class="windowbar-controls"><div class="windowbar-close"><svg x="0px" y="0px" viewBox="0 0 6 6"><polygon fill="#860006" points="6,1 6,0 5,0 3,2 1,0 0,0 0,1 2,3 0,5 0,6 1,6 3,4 5,6 6,6 6,5 4,3"></polygon></svg></div><div class="windowbar-minimize"><svg x="0px" y="0px" viewBox="0 0 7 2"><rect fill="#9d5615" width="7" height="2"></rect></svg></div><div class="windowbar-maximize"><svg class="fullscreen-svg" x="0px" y="0px" viewBox="0 0 6 6"><path fill="#006413" d="M0,1.4v3.8c0.4,0,0.8,0.3,0.8,0.8h3.8L0,1.4z"/><path fill="#006413" d="M6,4.6V0.8C5.6,0.8,5.2,0.4,5.2,0H1.4L6,4.6z"/></svg><svg class="exit-fullscreen-svg" x="0px" y="0px" viewBox="0 0 6 6"><path fill="#006413" d="M3,0v2.5c0.3,0,0.5,0.2,0.5,0.5H6L3,0z"/><path fill="#006413" d="M3,6V3.5C2.7,3.5,2.5,3.3,2.5,3H0L3,6z"/></svg><svg class="maximize-svg" x="0px" y="0px" viewBox="0 0 7.9 7.9"><polygon fill="#006413" points="7.9,4.5 7.9,3.4 4.5,3.4 4.5,0 3.4,0 3.4,3.4 0,3.4 0,4.5 3.4,4.5 3.4,7.9 4.5,7.9 4.5,4.5"></polygon></svg></div></div></div>`;
-	} else if (s === 'win') {
-		return `<div class="windowbar wb-win"><div class="windowbar-controls"><div class="windowbar-minimize"><svg x="0px" y="0px" viewBox="0 0 10 1"><rect fill="#000000" width="10" height="1"></rect></svg></div><div class="windowbar-maximize"><svg class="maximize-svg" x="0px" y="0px" viewBox="0 0 10 10"><path fill="#000000" d="M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z "/></svg><svg class="unmaximize-svg" x="0px" y="0px" viewBox="0 0 10 10"><mask id="Mask"><rect fill="#FFFFFF" width="10" height="10"></rect><path fill="#000000" d="M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z"/><path fill="#000000" d="M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z"/></mask><path fill="#000000" d="M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z" mask="url(#Mask)"/></svg></div><div class="windowbar-close"><svg x="0px" y="0px" viewBox="0 0 12 12"><polygon fill="#000000" points="12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6"></polygon></svg></div></div></div>`;
-	}
-}
-var css = function(){
-	return `.windowbar{display:flex;box-sizing:content-box}.windowbar *{box-sizing:inherit}.windowbar::after{content:' ';display:table;clear:both}.windowbar.draggable{-webkit-app-region:drag}.windowbar.draggable .windowbar-minimize,.windowbar.draggable .windowbar-maximize,.windowbar.draggable .windowbar-close{-webkit-app-region:no-drag}.windowbar .windowbar-controls::after{content:' ';display:table;clear:both}.windowbar.wb-mac{align-items:center;justify-content:space-between;padding:0 3px}.windowbar.wb-mac:not(.transparent){background-color:#e5e5e5}.windowbar.wb-mac.unfocused:not(.transparent){background-color:#f6f6f6}.windowbar.wb-mac .windowbar-controls:hover svg{opacity:1 !important}.windowbar.wb-mac.alt:not(.fullscreen) svg.fullscreen-svg{display:none}.windowbar.wb-mac.alt:not(.fullscreen) svg.maximize-svg{display:block !important}.windowbar.wb-mac.fullscreen svg.fullscreen-svg{display:none}.windowbar.wb-mac.fullscreen svg.exit-fullscreen-svg{display:block !important}.windowbar.wb-mac .windowbar-close,.windowbar.wb-mac .windowbar-minimize,.windowbar.wb-mac .windowbar-maximize{float:left;width:10px;height:10px;border-radius:50%;margin:6px 4px;line-height:0}.windowbar.wb-mac .windowbar-close{border:1px solid #e94343;background-color:#ff5d5b;margin-left:6px}.windowbar.wb-mac .windowbar-close:active{border-color:#b43737;background-color:#c64845}.windowbar.wb-mac .windowbar-close svg{width:6px;height:6px;margin-top:2px;margin-left:2px;opacity:0}.windowbar.wb-mac .windowbar-minimize{border:1px solid #e5a03a;background-color:#ffbc45}.windowbar.wb-mac .windowbar-minimize:active{border-color:#b07b2e;background-color:#c38e34}.windowbar.wb-mac .windowbar-minimize svg{width:8px;height:8px;margin-top:1px;margin-left:1px;opacity:0}.windowbar.wb-mac .windowbar-maximize{border:1px solid #13ad3e;background-color:#00c94f}.windowbar.wb-mac .windowbar-maximize:active{border-color:#138532;background-color:#009a3c}.windowbar.wb-mac .windowbar-maximize svg.fullscreen-svg{width:6px;height:6px;margin-top:2px;margin-left:2px;opacity:0}.windowbar.wb-mac .windowbar-maximize svg.exit-fullscreen-svg{width:10px;height:10px;margin-top:0;margin-left:0;opacity:0;display:none}.windowbar.wb-mac .windowbar-maximize svg.maximize-svg{width:8px;height:8px;margin-top:1px;margin-left:1px;opacity:0;display:none}.windowbar.wb-mac.unfocused .windowbar-controls:not(:hover)>*{background-color:#dcdcdc;border-color:#d1d1d1}.windowbar.wb-win{justify-content:flex-end;padding:0}.windowbar.wb-win:not(.transparent){background-color:#fff}.windowbar.wb-win.unfocused .windowbar-controls:not(:hover) svg{opacity:60%}.windowbar.wb-win .windowbar-minimize,.windowbar.wb-win .windowbar-maximize,.windowbar.wb-win .windowbar-close{float:left;width:45px;height:29px;margin:0 0 1px 1px;text-align:center;line-height:29px;-webkit-transition:background-color .2s;-moz-transition:background-color .2s;-ms-transition:background-color .2s;-o-transition:background-color .2s;transition:background-color .2s}.windowbar.wb-win .windowbar-minimize svg,.windowbar.wb-win .windowbar-maximize svg,.windowbar.wb-win .windowbar-close svg{width:10px;height:10px}.windowbar.wb-win .windowbar-close svg polygon{-webkit-transition:fill .2s;-moz-transition:fill .2s;-ms-transition:fill .2s;-o-transition:fill .2s;transition:fill .2s}.windowbar.wb-win.fullscreen .windowbar-minimize,.windowbar.wb-win.fullscreen .windowbar-maximize,.windowbar.wb-win.fullscreen .windowbar-close{height:21px;line-height:21px}.windowbar.wb-win:not(.fullscreen) .windowbar-maximize svg.unmaximize-svg{display:none}.windowbar.wb-win.fullscreen .windowbar-maximize svg.maximize-svg{display:none}.windowbar.wb-win .windowbar-minimize:hover,.windowbar.wb-win .windowbar-maximize:hover{background-color:rgba(127,127,127,0.2)}.windowbar.wb-win .windowbar-close:hover{background-color:#E81123}.windowbar.wb-win .windowbar-close:hover svg polygon{fill:#fff}.windowbar.wb-win.dark:not(.transparent){background-color:#1f1f1f}.windowbar.wb-win.dark svg>rect,.windowbar.wb-win.dark svg>polygon,.windowbar.wb-win.dark svg>path{fill:#fff}`;
-}
-
-class Windowbar extends EventEmitter {
-	constructor(options = {}){
-		super();
-		// Get Options
-		this.options = {};
-		this.options.style = options.style;
-		this.options.transparent = options.transparent;
-		this.options.dark = options.dark;
-		this.options.draggable = "draggable" in options ? options.draggable : true;
-		this.options.dblClickable = "dblClickable" in options ? options.dblClickable : true;
-		
-		// Set proper style
-		if (!['mac','win','generic'].includes(this.options.style)){
-			if (this.options.style === 'darwin' || process.platform === 'darwin') this.options.style = 'mac';
-			else if (this.options.style === 'win32' || process.platform === 'win32') this.options.style = 'win';
-			else this.options.style = 'generic';
-		}
-		
-		// Create Windowbar element
-		this.element = domify(html(this.options.style), document);
-		
-		// Register buttons
-		this.minimizeButton = this.element.querySelector('.windowbar-minimize');
-		this.maximizeButton = this.element.querySelector('.windowbar-maximize');
-		this.closeButton = this.element.querySelector('.windowbar-close');
-		
-		// Draggable
-		if (this.options.draggable) classes(this.element).add('draggable');
-		// Transparent
-		if (this.options.transparent) classes(this.element).add('transparent');
-		// Dark mode
-		if (this.options.dark) classes(this.element).add('dark');
-		
-		// Add click events
-		this.element.addEventListener('dblclick', event => this.onDblClick(event));
-		this.minimizeButton.addEventListener('click', event => this.clickMinimize(event));
-		this.maximizeButton.addEventListener('click', event => this.clickMaximize(event));
-		this.closeButton.addEventListener('click', event => this.clickClose(event));
-		
-		// Show maximize svg while holding alt (mac only)
-		if (this.options.style === 'mac'){
-			var self = this;
-			window.addEventListener('keydown', function(e){
-				if(e.keyCode === ALT) classes(self.element).add('alt');
-			});
-			window.addEventListener('keyup', function(e){
-				if(e.keyCode === ALT) classes(self.element).remove('alt');
-			});
-		}
-	}
-	
-	clickClose(e){ this.emit('close', e); };
-	
-	clickMinimize(e){ this.emit('minimize', e); };
-	
-	clickMaximize(e){
-		if (this.options.style === 'mac'){
-			if (e.altKey && !classes(this.element).has('fullscreen')) this.emit('maximize', e);
-			else {
-				classes(this.element).toggle('fullscreen');
-				this.emit('fullscreen', e);
-			}
-		} else {
-			classes(this.element).toggle('fullscreen');
-			this.emit('maximize', e);
-		}
-	};
-	
-	onDblClick(e){
-		e.preventDefault;
-		if (this.options.dblClickable && !(this.minimizeButton.contains(e.target) || this.maximizeButton.contains(e.target) || this.closeButton.contains(e.target))){
-			this.clickMaximize(e);
-			console.log('dblclick', e);
-		}
-	};
-	
-	appendTo(context = document.body){
-		defaultCss('windowbar', css());
-		context.appendChild(this.element);
-		return this;
-	};
-	
-	destroy(){
-		parent.removeChild(this.element);
-		return this;
-	};
-}
-
-module.exports = Windowbar;
-
-}).call(this,require('_process'))
-},{"_process":8,"component-classes":2,"defaultcss":4,"domify":5,"events":7,"fs":6,"path":9}],2:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -304,7 +191,7 @@ ClassList.prototype.contains = function(name){
     : !! ~index(this.array(), name);
 };
 
-},{"component-indexof":3,"indexof":3}],3:[function(require,module,exports){
+},{"component-indexof":2,"indexof":2}],2:[function(require,module,exports){
 module.exports = function(arr, obj){
   if (arr.indexOf) return arr.indexOf(obj);
   for (var i = 0; i < arr.length; ++i) {
@@ -312,7 +199,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /* jshint node: true */
 'use strict';
 
@@ -390,7 +277,7 @@ module.exports = function(label, text) {
   return styleEl;
 };
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
 /**
  * Expose `parse`.
@@ -504,9 +391,7 @@ function parse(html, doc) {
   return fragment;
 }
 
-},{}],6:[function(require,module,exports){
-
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -810,7 +695,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -996,7 +881,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1224,5 +1109,128 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":8}]},{},[1])(1)
+},{"_process":6}],8:[function(require,module,exports){
+(function (process){
+const EventEmitter = require('events');
+
+const path = require('path');
+const domify = require('domify');
+const defaultCss = require('defaultcss');
+const classes = require('component-classes');
+
+const ALT = 18;
+
+const html = function(s = '', cb){
+	const file = "<div class=\"windowbar wb-mac\">\n\t<div class=\"windowbar-title\"></div>\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<polygon fill=\"#860006\" points=\"6,1 6,0 5,0 3,2 1,0 0,0 0,1 2,3 0,5 0,6 1,6 3,4 5,6 6,6 6,5 4,3\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 7 2\">\n\t\t\t\t<rect fill=\"#9d5615\" width=\"7\" height=\"2\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg class=\"fullscreen-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<path fill=\"#006413\" d=\"M0,1.4v3.8c0.4,0,0.8,0.3,0.8,0.8h3.8L0,1.4z\"/>\n\t\t\t\t<path fill=\"#006413\" d=\"M6,4.6V0.8C5.6,0.8,5.2,0.4,5.2,0H1.4L6,4.6z\"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"exit-fullscreen-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<path fill=\"#006413\" d=\"M3,0v2.5c0.3,0,0.5,0.2,0.5,0.5H6L3,0z\"/>\n\t\t\t\t<path fill=\"#006413\" d=\"M3,6V3.5C2.7,3.5,2.5,3.3,2.5,3H0L3,6z\"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"maximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 7.9 7.9\">\n\t\t\t\t<polygon fill=\"#006413\" points=\"7.9,4.5 7.9,3.4 4.5,3.4 4.5,0 3.4,0 3.4,3.4 0,3.4 0,4.5 3.4,4.5 3.4,7.9 4.5,7.9 4.5,4.5\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n\n<div class=\"windowbar wb-win\">\n\t<div class=\"windowbar-title\"></div>\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 1\">\n\t\t\t\t<rect fill=\"#000000\" width=\"10\" height=\"1\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg class=\"maximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<path fill=\"#000000\" d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z \"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"unmaximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<mask id=\"Mask\">\n\t\t\t\t\t<rect fill=\"#FFFFFF\" width=\"10\" height=\"10\"></rect>\n\t\t\t\t\t<path fill=\"#000000\" d=\"M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z\"/>\n\t\t\t\t\t<path fill=\"#000000\" d=\"M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z\"/>\n\t\t\t\t</mask>\n\t\t\t\t<path fill=\"#000000\" d=\"M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z\" mask=\"url(#Mask)\"/>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 12 12\">\n\t\t\t\t<polygon fill=\"#000000\" points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n\n<div class=\"windowbar wb-default\">\n\t<div class=\"windowbar-title\"></div>\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<rect fill=\"#000000\" width=\"10\" height=\"1\" x=\"0\" y=\"9\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<path fill=\"#000000\" d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z \"/>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 12 12\">\n\t\t\t\t<polygon fill=\"#000000\" points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n";
+	const html = domify(file);
+	
+	if (s === 'mac') return html.querySelector('.wb-mac');
+	if (s === 'win') return html.querySelector('.wb-win');
+	if (s === 'default') return html.querySelector('.wb-default');
+	return '';
+}
+const css = ".windowbar{box-sizing:content-box}.windowbar *{box-sizing:inherit}.windowbar.draggable{-webkit-app-region:drag}.windowbar.draggable .windowbar-controls{-webkit-app-region:no-drag}.windowbar:not(.fixed){z-index:9998;position:relative}.windowbar.fixed{z-index:9999;position:fixed;top:0;left:0;right:0}.windowbar .windowbar-title{display:block;position:absolute;top:50%;transform:translateY(-50%);z-index:10;text-align:center;user-select:none}.windowbar .windowbar-controls{z-index:20}.windowbar .windowbar-controls::after{content:' ';display:table;clear:both}.windowbar.wb-mac{min-height:22px}.windowbar.wb-mac:not(.transparent){background-image:linear-gradient(to bottom, #ededed 0%, #d2d1d2 100%);border-top:1px solid #f5f5f5;border-bottom:1px solid #b7b4b7;border-radius:5px 5px 0 0}.windowbar.wb-mac.alt:not(.fullscreen) svg.fullscreen-svg{display:none}.windowbar.wb-mac.alt:not(.fullscreen) svg.maximize-svg{display:block !important}.windowbar.wb-mac.fullscreen svg.fullscreen-svg{display:none}.windowbar.wb-mac.fullscreen svg.exit-fullscreen-svg{display:block !important}.windowbar.wb-mac .windowbar-title{font-family:\"Lucida Grande\", Roboto, sans-serif;font-size:14px;color:#333;left:50%;transform:translateX(-50%) translateY(-50%)}.windowbar.wb-mac .windowbar-controls{position:absolute;top:50%;left:0;transform:translateY(-50%);padding:5px 8px}.windowbar.wb-mac .windowbar-controls:hover svg{opacity:1 !important}.windowbar.wb-mac .windowbar-controls svg{width:8px;height:8px;margin-top:2px;margin-left:2px;opacity:0}.windowbar.wb-mac .windowbar-close,.windowbar.wb-mac .windowbar-minimize,.windowbar.wb-mac .windowbar-maximize{float:left;width:12px;height:12px;border-radius:50%;margin-right:8px;line-height:0}.windowbar.wb-mac .windowbar-close{border:1px solid #e24d47;background-color:#ff6157}.windowbar.wb-mac .windowbar-close:active{border-color:#b43737;background-color:#c64845}.windowbar.wb-mac .windowbar-minimize{border:1px solid #dfa32c;background-color:#ffc12f}.windowbar.wb-mac .windowbar-minimize:active{border-color:#b07b2e;background-color:#c38e34}.windowbar.wb-mac .windowbar-maximize{border:1px solid #24ae34;background-color:#2acb42;margin-right:0}.windowbar.wb-mac .windowbar-maximize:active{border-color:#138532;background-color:#009a3c}.windowbar.wb-mac .windowbar-maximize svg.exit-fullscreen-svg,.windowbar.wb-mac .windowbar-maximize svg.maximize-svg{display:none}.windowbar.wb-mac.unfocused .windowbar-controls:not(:hover)>*{background-color:#dcdcdc;border-color:#d1d1d1}.windowbar.wb-mac.dark:not(.transparent){background-image:linear-gradient(to bottom, #4a4a4a 0%, #3d3d3d 100%);border-top:1px solid #5d5d5d;border-bottom:1px solid #2b2b2b}.windowbar.wb-mac.dark .windowbar-title{color:#fff}.windowbar.wb-mac.dark .windowbar-close,.windowbar.wb-mac.dark .windowbar-minimize,.windowbar.wb-mac.dark .windowbar-maximize{width:14px;height:14px;border:none}.windowbar.wb-mac.dark .windowbar-close svg,.windowbar.wb-mac.dark .windowbar-minimize svg,.windowbar.wb-mac.dark .windowbar-maximize svg{margin-top:3px;margin-left:3px}.windowbar.wb-win{min-height:30px;padding:0}.windowbar.wb-win:not(.transparent){background-color:#fff}.windowbar.wb-win.unfocused .windowbar-controls:not(:hover) svg{opacity:60%}.windowbar.wb-win .windowbar-title{font-family:\"Segoe UI\", \"Open Sans\", sans-serif;font-size:14px;color:#333;left:10px}.windowbar.wb-win .windowbar-controls{position:absolute;top:0;right:0}.windowbar.wb-win .windowbar-minimize,.windowbar.wb-win .windowbar-maximize,.windowbar.wb-win .windowbar-close{float:left;width:45px;height:29px;margin:0 0 1px 1px;text-align:center;line-height:29px;-webkit-transition:background-color .2s;-moz-transition:background-color .2s;-ms-transition:background-color .2s;-o-transition:background-color .2s;transition:background-color .2s}.windowbar.wb-win .windowbar-minimize svg,.windowbar.wb-win .windowbar-maximize svg,.windowbar.wb-win .windowbar-close svg{width:10px;height:10px}.windowbar.wb-win .windowbar-close svg polygon{-webkit-transition:fill .2s;-moz-transition:fill .2s;-ms-transition:fill .2s;-o-transition:fill .2s;transition:fill .2s}.windowbar.wb-win:not(.fullscreen) .windowbar-maximize svg.unmaximize-svg{display:none}.windowbar.wb-win.fullscreen .windowbar-maximize svg.maximize-svg{display:none}.windowbar.wb-win .windowbar-minimize:hover,.windowbar.wb-win .windowbar-maximize:hover{background-color:rgba(127,127,127,0.2)}.windowbar.wb-win .windowbar-close:hover{background-color:#e81123}.windowbar.wb-win .windowbar-close:hover svg polygon{fill:#fff}.windowbar.wb-win.dark:not(.transparent){background-color:#1f1f1f}.windowbar.wb-win.dark .windowbar-title{color:#fff}.windowbar.wb-win.dark svg>rect,.windowbar.wb-win.dark svg>polygon,.windowbar.wb-win.dark svg>path{fill:#fff}.windowbar.wb-default{min-height:30px;padding:0}.windowbar.wb-default:not(.transparent){background-color:#fff}.windowbar.wb-default.unfocused .windowbar-controls:not(:hover) svg{opacity:60%}.windowbar.wb-default .windowbar-title{font-family:\"Roboto\", sans-serif;font-size:14px;color:#333;left:50%;transform:translateX(-50%) translateY(-50%)}.windowbar.wb-default .windowbar-controls{position:absolute;top:0;right:0}.windowbar.wb-default .windowbar-minimize,.windowbar.wb-default .windowbar-maximize,.windowbar.wb-default .windowbar-close{float:left;width:40px;height:30px;text-align:center;line-height:30px;opacity:0.8}.windowbar.wb-default .windowbar-minimize:hover,.windowbar.wb-default .windowbar-maximize:hover,.windowbar.wb-default .windowbar-close:hover{opacity:1;background-color:rgba(127,127,127,0.2)}.windowbar.wb-default .windowbar-minimize svg,.windowbar.wb-default .windowbar-maximize svg,.windowbar.wb-default .windowbar-close svg{width:10px;height:10px}.windowbar.wb-default.dark:not(.transparent){background-color:#000}.windowbar.wb-default.dark .windowbar-title{color:#fff}.windowbar.wb-default.dark svg>*{fill:#fff}\n";
+
+class Windowbar extends EventEmitter {
+	constructor(options = {}){
+		super();
+		
+		// Get Options
+		this.options = {
+			dark: options.dark || false,
+			draggable: ('draggable' in options ? options.draggable : true),
+			dblClickable: ('dblClickable' in options ? options.dblClickable : true),
+			fixed: options.fixed || false,
+			style: options.style || '',
+			title: options.title || '',
+			transparent: options.transparent || false
+		};
+		
+		// Set proper style
+		if (!['mac','win','default'].includes(this.options.style)){
+			if (process.platform === 'darwin') this.options.style = 'mac';
+			else if (process.platform === 'win32') this.options.style = 'win';
+			else this.options.style = 'default';
+		}
+		
+		// Create Windowbar element
+		this.element = html(this.options.style);
+		
+		// Set title
+		this.updateTitle(this.options.title);
+		
+		// Register buttons
+		this.minimizeButton = this.element.querySelector('.windowbar-minimize');
+		this.maximizeButton = this.element.querySelector('.windowbar-maximize');
+		this.closeButton = this.element.querySelector('.windowbar-close');
+		
+		if (this.options.dark) classes(this.element).add('dark'); // Dark mode
+		if (this.options.draggable) classes(this.element).add('draggable'); // Draggable
+		if (this.options.fixed) classes(this.element).add('fixed'); // Fixed position
+		if (this.options.transparent) classes(this.element).add('transparent'); // Transparent
+		
+		// Add click events
+		this.element.addEventListener('dblclick', event => this.onDblClick(event));
+		this.minimizeButton.addEventListener('click', event => this.clickMinimize(event));
+		this.maximizeButton.addEventListener('click', event => this.clickMaximize(event));
+		this.closeButton.addEventListener('click', event => this.clickClose(event));
+		
+		// Show maximize svg while holding alt (mac only)
+		if (this.options.style === 'mac'){
+			var self = this;
+			window.addEventListener('keydown', function(e){
+				if(e.keyCode === ALT) classes(self.element).add('alt');
+			});
+			window.addEventListener('keyup', function(e){
+				if(e.keyCode === ALT) classes(self.element).remove('alt');
+			});
+		}
+	}
+	
+	clickClose(e){ this.emit('close', e); };
+	
+	clickMinimize(e){ this.emit('minimize', e); };
+	
+	clickMaximize(e){
+		if (this.options.style === 'mac'){
+			if (e.altKey && !classes(this.element).has('fullscreen')) this.emit('maximize', e);
+			else {
+				classes(this.element).toggle('fullscreen');
+				this.emit('fullscreen', e);
+			}
+		} else {
+			classes(this.element).toggle('fullscreen');
+			this.emit('maximize', e);
+		}
+	};
+	
+	onDblClick(e){
+		e.preventDefault;
+		if (this.options.dblClickable && !(this.minimizeButton.contains(e.target) || this.maximizeButton.contains(e.target) || this.closeButton.contains(e.target))){
+			this.clickMaximize(e);
+			console.log('dblclick', e);
+		}
+	};
+	
+	updateTitle(t){
+		this.options.title = t;
+		this.element.querySelector('.windowbar-title').innerHTML = t;
+	}
+	
+	appendTo(context = document.body){
+		defaultCss('windowbar', css);
+		context.appendChild(this.element);
+		return this;
+	};
+	
+	destroy(){
+		parent.removeChild(this.element);
+		return this;
+	};
+}
+
+module.exports = Windowbar;
+
+}).call(this,require('_process'))
+},{"_process":6,"component-classes":1,"defaultcss":3,"domify":4,"events":5,"path":7}]},{},[8])(8)
 });

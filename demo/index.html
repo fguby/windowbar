@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>Windowbar demo</title>
+	<meta charset="UTF-8">
 	<style>
 	
 	body {
@@ -20,7 +21,7 @@
 			};
 		};
 
-		var wm = new windowbar({'style':'mac', 'draggable':true, 'dblClickable':false})
+		new windowbar({'title': 'macOS - Light', 'style':'mac', 'draggable':false, 'dblClickable':false})
 			.on('close', log('close'))
 			.on('minimize', log('minimize'))
 			.on('fullscreen', log('fullscreen'))
@@ -29,7 +30,7 @@
 		
 		document.write('<br>');
 		
-		var ww = new windowbar({'style':'win', 'draggable':false, 'dblClickable':true})
+		new windowbar({'title': 'Windows - light', 'style':'win', 'draggable':false, 'dblClickable':true})
 			.on('close', log('close'))
 			.on('minimize', log('minimize'))
 			.on('maximize', log('maximize'))
@@ -37,7 +38,32 @@
 		
 		document.write('<br>');
 		
-		var ww = new windowbar({'style':'win', 'dark':true, 'draggable':false, 'dblClickable':true})
+		new windowbar({'title': 'Default - light', 'style':'default', 'draggable':false, 'dblClickable':false})
+			.on('close', log('close'))
+			.on('minimize', log('minimize'))
+			.on('maximize', log('maximize'))
+			.appendTo(document.body);
+		
+		document.write('<br>');
+		
+		new windowbar({'title': 'macOS - Dark', 'style':'mac', 'dark':true, 'draggable':false, 'dblClickable':false})
+			.on('close', log('close'))
+			.on('minimize', log('minimize'))
+			.on('fullscreen', log('fullscreen'))
+			.on('maximize', log('maximize'))
+			.appendTo(document.body);
+		
+		document.write('<br>');
+		
+		new windowbar({'title': 'Windows - dark', 'style':'win', 'dark':true, 'draggable':false, 'dblClickable':true})
+			.on('close', log('close'))
+			.on('minimize', log('minimize'))
+			.on('maximize', log('maximize'))
+			.appendTo(document.body);
+		
+		document.write('<br>');
+		
+		new windowbar({'title': 'Default - dark', 'style':'default', 'dark':true, 'draggable':false, 'dblClickable':false})
 			.on('close', log('close'))
 			.on('minimize', log('minimize'))
 			.on('maximize', log('maximize'))

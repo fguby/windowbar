@@ -1,48 +1,61 @@
 .windowbar {
-	display: flex;
 	box-sizing: content-box;
 	
 	* { box-sizing: inherit; }
 	
-	&::after {
-		content: ' ';
-		display: table;
-		clear: both;
-	}
-	
 	&.draggable {
 		-webkit-app-region: drag;
 		
-		.windowbar-minimize,
-		.windowbar-maximize,
-		.windowbar-close {
+		.windowbar-controls {
 			-webkit-app-region: no-drag;
 		}
 	}
 	
-	.windowbar-controls::after {
-		content: ' ';
-		display: table;
-		clear: both;
+	&:not(.fixed) {
+		z-index: 9998;
+		position: relative;
+	}
+	&.fixed {
+		z-index: 9999;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+	}
+	
+	.windowbar-title {
+		display: block;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 10;
+		text-align: center;
+		user-select: none;
+	}
+	
+	.windowbar-controls {
+		z-index: 20;
+		
+		&::after {
+			content: ' ';
+			display: table;
+			clear: both;
+		}
 	}
 	
 	
 	&.wb-mac {
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 3px;
+		min-height: 22px;
 		
-		&:not(.transparent) { background-color: #e5e5e5; }
-		&.unfocused:not(.transparent) { background-color: #f6f6f6; }
-
-		.windowbar-controls {
-			&:hover {
-				svg {
-					opacity: 1 !important;
-				}
-			}
+		&:not(.transparent) {
+			background-image: linear-gradient(to bottom,
+				#ededed 0%,
+				#d2d1d2 100%);
+			border-top: 1px solid #f5f5f5;
+			border-bottom: 1px solid #b7b4b7;
+			border-radius: 5px 5px 0 0;
 		}
-
+		
 		&.alt:not(.fullscreen) {
 			svg.fullscreen-svg {
 				display: none;
@@ -63,86 +76,77 @@
 			}
 		}
 
+		.windowbar-title {
+			font-family: "Lucida Grande", Roboto, sans-serif;
+			font-size: 14px;
+			color: #333;
+			left: 50%;
+			transform: translateX(-50%) translateY(-50%);
+		}
+
+		.windowbar-controls {
+			position: absolute;
+			top: 50%; left: 0;
+			transform: translateY(-50%);
+			padding: 5px 8px;
+			
+			&:hover {
+				svg {
+					opacity: 1 !important;
+				}
+			}
+			
+			svg {
+				width: 8px;
+				height: 8px;
+				margin-top: 2px;
+				margin-left: 2px;
+				opacity: 0;
+			}
+		}
+
 		.windowbar-close,
 		.windowbar-minimize,
 		.windowbar-maximize {
 			float: left;
-			width: 10px;
-			height: 10px;
+			width: 12px;
+			height: 12px;
 			border-radius: 50%;
-			margin: 6px 4px;
+			margin-right: 8px;
 			line-height: 0;
 		}
 
 		.windowbar-close {
-			border: 1px solid #e94343;
-			background-color: #ff5d5b;
-			margin-left: 6px;
+			border: 1px solid #e24d47;
+			background-color: #ff6157;
 
 			&:active {
 				border-color: #b43737;
 				background-color: #c64845;
 			}
-
-			svg {
-				width: 6px;
-				height: 6px;
-				margin-top: 2px;
-				margin-left: 2px;
-				opacity: 0;
-			}
 		}
 
 		.windowbar-minimize {
-			border: 1px solid #e5a03a;
-			background-color: #ffbc45;
+			border: 1px solid #dfa32c;
+			background-color: #ffc12f;
 
 			&:active {
 				border-color: #b07b2e;
 				background-color: #c38e34;
 			}
-
-			svg {
-				width: 8px;
-				height: 8px;
-				margin-top: 1px;
-				margin-left: 1px;
-				opacity: 0;
-			}
 		}
 
 		.windowbar-maximize {
-			border: 1px solid #13ad3e;
-			background-color: #00c94f;
+			border: 1px solid #24ae34;
+			background-color: #2acb42;
+			margin-right: 0;
 			
 			&:active {
 				border-color: #138532;
 				background-color: #009a3c;
 			}
-
-			svg.fullscreen-svg {
-				width: 6px;
-				height: 6px;
-				margin-top: 2px;
-				margin-left: 2px;
-				opacity: 0;
-			}
 			
-			svg.exit-fullscreen-svg {
-				width: 10px;
-				height: 10px;
-				margin-top: 0;
-				margin-left: 0;
-				opacity: 0;
-				display: none;
-			}
-			
-			svg.maximize-svg {
-				width: 8px;
-				height: 8px;
-				margin-top: 1px;
-				margin-left: 1px;
-				opacity: 0;
+			svg.exit-fullscreen-svg, svg.maximize-svg {
 				display: none;
 			}
 		}
@@ -151,17 +155,53 @@
 			background-color: #dcdcdc;
 			border-color: #d1d1d1;
 		}
+		
+		&.dark {
+			&:not(.transparent) {
+				background-image: linear-gradient(to bottom,
+					#4a4a4a 0%,
+					#3d3d3d 100%);
+				border-top: 1px solid #5d5d5d;
+				border-bottom: 1px solid #2b2b2b;
+			}
+			
+			.windowbar-title {
+				color: #fff;
+			}
+			
+			.windowbar-close,
+			.windowbar-minimize,
+			.windowbar-maximize {
+				width: 14px;
+				height: 14px;
+				border: none;
+				
+				svg {
+					margin-top: 3px;
+					margin-left: 3px;
+				}
+			}
+		}
 	}
 	
 	
 	&.wb-win {
-		justify-content: flex-end;
+		min-height: 30px;
 		padding: 0;
 		
 		&:not(.transparent) { background-color: #fff; }
+		&.unfocused .windowbar-controls:not(:hover) svg { opacity: 60%; }
 		
-		&.unfocused .windowbar-controls:not(:hover) svg {
-			opacity: 60%;
+		.windowbar-title {
+			font-family: "Segoe UI", "Open Sans", sans-serif;
+			font-size: 14px;
+			color: #333;
+			left: 10px;
+		}
+		
+		.windowbar-controls {
+			position: absolute;
+			top: 0; right: 0;
 		}
 
 		.windowbar-minimize,
@@ -194,14 +234,17 @@
 			transition: fill .2s;
 		}
 		
-		&.fullscreen {
+		// Not really liking the changing height. May cause issues with electron.
+		/* &.fullscreen {
+			min-height: 21px;
+			
 			.windowbar-minimize,
 			.windowbar-maximize,
 			.windowbar-close {
 				height: 21px;
 				line-height: 21px;
 			}
-		}
+		} */
 
 		&:not(.fullscreen) .windowbar-maximize svg.unmaximize-svg { display: none; }
 		&.fullscreen .windowbar-maximize svg.maximize-svg { display: none; }
@@ -211,7 +254,7 @@
 			background-color: rgba(127,127,127, 0.2);
 		}
 		.windowbar-close:hover {
-			background-color: #E81123;
+			background-color: #e81123;
 			
 			svg polygon {
 				fill: #fff;
@@ -221,8 +264,68 @@
 		&.dark {
 			&:not(.transparent) { background-color: #1f1f1f; }
 			
+			.windowbar-title {
+				color: #fff;
+			}
+			
 			svg {
 				> rect, > polygon, > path {
+					fill: #fff;
+				}
+			}
+		}
+	}
+	
+	&.wb-default {
+		min-height: 30px;
+		padding: 0;
+		
+		&:not(.transparent) { background-color: #fff; }
+		&.unfocused .windowbar-controls:not(:hover) svg { opacity: 60%; }
+		
+		.windowbar-title {
+			font-family: "Roboto", sans-serif;
+			font-size: 14px;
+			color: #333;
+			left: 50%;
+			transform: translateX(-50%) translateY(-50%);
+		}
+		
+		.windowbar-controls {
+			position: absolute;
+			top: 0; right: 0;
+		}
+
+		.windowbar-minimize,
+		.windowbar-maximize,
+		.windowbar-close {
+			float: left;
+			width: 40px;
+			height: 30px;
+			text-align: center;
+			line-height: 30px;
+			opacity: 0.8;
+			
+			&:hover {
+				opacity: 1;
+				background-color: rgba(127,127,127, 0.2);
+			}
+			
+			svg {
+				width: 10px;
+				height: 10px;
+			}
+		}
+		
+		&.dark {
+			&:not(.transparent) { background-color: #000; }
+			
+			.windowbar-title {
+				color: #fff;
+			}
+			
+			svg {
+				> * {
 					fill: #fff;
 				}
 			}
