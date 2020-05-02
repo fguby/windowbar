@@ -1,8 +1,8 @@
 {
 	"name": "windowbar",
-	"version": "1.7.0",
+	"version": "1.7.1",
 	"description": "Emulate window title bar in three different styles.",
-	"main": "index.js",
+	"main": "dist/index.js",
 	"scripts": {
 		"start": "grunt",
 		"build": "grunt compass && grunt browserify"
