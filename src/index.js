@@ -30,6 +30,7 @@ class Windowbar extends EventEmitter {
 			fixed: options.fixed || false,
 			style: options.style || '',
 			title: options.title || '',
+			tall: options.tall || false,
 			transparent: options.transparent || false
 		};
 		
@@ -51,9 +52,11 @@ class Windowbar extends EventEmitter {
 		this.maximizeButton = this.element.querySelector('.windowbar-maximize');
 		this.closeButton = this.element.querySelector('.windowbar-close');
 		
+		// Add classes
 		if (this.options.dark) classes(this.element).add('dark'); // Dark mode
 		if (this.options.draggable) classes(this.element).add('draggable'); // Draggable
 		if (this.options.fixed) classes(this.element).add('fixed'); // Fixed position
+		if (this.options.tall && this.options.style == 'mac') classes(this.element).add('tall'); // Tall bar (mac only)
 		if (this.options.transparent) classes(this.element).add('transparent'); // Transparent
 		
 		// Add click events

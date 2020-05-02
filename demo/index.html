@@ -29,6 +29,15 @@
 			.appendTo(document.body);
 		
 		document.write('<br>');
+
+		new windowbar({'title': 'macOS - Light - Tall', 'style':'mac', 'draggable':false, 'dblClickable':false, 'tall':true})
+			.on('close', log('close'))
+			.on('minimize', log('minimize'))
+			.on('fullscreen', log('fullscreen'))
+			.on('maximize', log('maximize'))
+			.appendTo(document.body);
+		
+		document.write('<br>');
 		
 		new windowbar({'title': 'Windows - light', 'style':'win', 'draggable':false, 'dblClickable':true})
 			.on('close', log('close'))

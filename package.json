@@ -1,6 +1,6 @@
 {
 	"name": "windowbar",
-	"version": "1.7.1",
+	"version": "1.7.2",
 	"description": "Emulate window title bar in three different styles.",
 	"main": "dist/index.js",
 	"scripts": {

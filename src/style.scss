@@ -182,6 +182,14 @@
 				}
 			}
 		}
+		
+		&.tall {
+			min-height: 38px;
+			
+			.windowbar-controls {
+				padding-left: 13px;
+			}
+		}
 	}
 	
 	
