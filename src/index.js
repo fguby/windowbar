@@ -26,7 +26,6 @@ class Windowbar extends EventEmitter {
 		this.options = {
 			dark: options.dark || false,
 			draggable: ('draggable' in options ? options.draggable : true),
-			dblClickable: ('dblClickable' in options ? options.dblClickable : true),
 			fixed: options.fixed || false,
 			style: options.style || '',
 			title: options.title || '',
@@ -55,7 +54,7 @@ class Windowbar extends EventEmitter {
 		// Add classes
 		if (this.options.dark) classes(this.element).add('dark'); // Dark mode
 		if (this.options.draggable) classes(this.element).add('draggable'); // Draggable
-		if (this.options.fixed) classes(this.element).add('fixed'); // Fixed position
+		if (this.options.fixed) classes(this.element).add('fixed'); // affix above content
 		if (this.options.tall && this.options.style == 'mac') classes(this.element).add('tall'); // Tall bar (mac only)
 		if (this.options.transparent) classes(this.element).add('transparent'); // Transparent
 		

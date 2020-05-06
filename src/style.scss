@@ -1,5 +1,6 @@
 .windowbar {
 	box-sizing: content-box;
+	z-index: 9999;
 	
 	* { box-sizing: inherit; }
 	
@@ -12,29 +13,30 @@
 	}
 	
 	&:not(.fixed) {
-		z-index: 9998;
 		position: relative;
 	}
 	&.fixed {
-		z-index: 9999;
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
+		position: absolute;
+		top: -1000px;
+		width: 0;
+		height: 0;
+		
+		.windowbar-title,
+		.windowbar-controls {
+			position: fixed !important;
+		}
 	}
 	
 	.windowbar-title {
 		display: block;
 		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 10;
+		z-index: 9998;
 		text-align: center;
 		user-select: none;
 	}
 	
 	.windowbar-controls {
-		z-index: 20;
+		z-index: 9999;
 		
 		&::after {
 			content: ' ';
@@ -80,14 +82,14 @@
 			font-family: "Lucida Grande", Roboto, sans-serif;
 			font-size: 14px;
 			color: #333;
+			top: calc(22px / 2);
 			left: 50%;
-			transform: translateX(-50%) translateY(-50%);
+			transform: translate(-50%, -50%);
 		}
 
 		.windowbar-controls {
 			position: absolute;
-			top: 50%; left: 0;
-			transform: translateY(-50%);
+			top: 0; left: 0;
 			padding: 5px 8px;
 			
 			&:hover {
@@ -186,8 +188,12 @@
 		&.tall {
 			min-height: 38px;
 			
+			.windowbar-title {
+				top: calc(38px / 2);
+			}
+			
 			.windowbar-controls {
-				padding-left: 13px;
+				padding: 13px;
 			}
 		}
 	}
@@ -204,7 +210,9 @@
 			font-family: "Segoe UI", "Open Sans", sans-serif;
 			font-size: 14px;
 			color: #333;
+			top: calc(30px / 2);
 			left: 10px;
+			transform: translateY(-50%);
 		}
 		
 		.windowbar-controls {
@@ -295,8 +303,9 @@
 			font-family: "Roboto", sans-serif;
 			font-size: 14px;
 			color: #333;
+			top: calc(30px / 2);
 			left: 50%;
-			transform: translateX(-50%) translateY(-50%);
+			transform: translate(-50%, -50%);
 		}
 		
 		.windowbar-controls {
@@ -308,7 +317,7 @@
 		.windowbar-maximize,
 		.windowbar-close {
 			float: left;
-			width: 40px;
+			width: 30px;
 			height: 30px;
 			text-align: center;
 			line-height: 30px;

@@ -26,15 +26,15 @@ The returned instance emits four events: `close`, `minimize`, `maximize`, and `f
 The constructor accepts an options object with these properties:
 
 * `dark` (default `false`): Dark theme.
-* `dblClickable` (default `true`): Allows double clicking windowbar to trigger maximize event.
 * `draggable` (default `true`): Enables/disables the [-webkit-app-region](https://developer.chrome.com/apps/app_window) CSS property on the root element. Allows frameless windows to be dragged in an `electron` application.
-* `fixed` (default `false`): Affixes the windowbar at the top of the page.
+* `fixed` (default `false`): Affixes to the top and floats above the rest of the content so only the buttons and title are visible. Ignores `transparent` rule.
 * `style` (defaults to current OS, or `default` if unrecognized): Possible values are `mac`, `win`, or `default`.
 * `tall`: (default `false`, mac only): Makes the windowbar taller than usual, with the controls slightly inset.
 * `title`: Sets the title. Can be changed later with `updateTitle(t)`.
 * `transparent` (default `false`): Transparent background for an overlayed effect.
 
 
+* `dblClickable`: Deprecated - Just don't provide a dblclick handler.
 
 # To do
 
