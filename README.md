@@ -1,10 +1,8 @@
 # windowbar
 
-Emulate window title bar in three different styles. See the [demo](http://katacarbix.xyz/windowbar/demo/index.html).
+Emulate window title bar in three different styles. See the [demo](https://katacarbix.gitlab.io/windowbar/demo/).
 
 `npm install windowbar`
-
-NOTE: A React component version is available [here](https://github.com/katacarbix/windowbar/tree/windowbar-react).
 
 # Usage
 
