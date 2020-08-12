@@ -1,12 +1,23 @@
+const sass = require('node-sass');
+
 module.exports = function(grunt){
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		compass: {
+		sass: {
+			options: {
+				implementation: sass,
+				outputStyle: 'compressed'
+			},
 			dist: {
-				options: {
-					sassDir: './src',
-					cssDir: './dist',
-					outputStyle: 'compressed'
+				files: {
+					'src/style.css': 'src/style.scss'
+				}
+			}
+		},
+		minifyHtml: {
+			dist: {
+				files: {
+					'src/windowbar.min.html': 'src/windowbar.html'
 				}
 			}
 		},
@@ -25,17 +36,22 @@ module.exports = function(grunt){
 		},
 		watch: {
 			css: {
-				files: 'src/*.scss',
-				tasks: ['compass']
+				files: 'src/style.scss',
+				tasks: ['sass']
+			},
+			html: {
+				files: 'src/windowbar.html',
+				tasks: ['minifyHtml']
 			},
 			browserify: {
-				files: ['src/*.js', 'dist/*.html', 'dist/*.css'],
+				files: ['src/index.js', 'src/windowbar.min.html', 'src/style.css'],
 				tasks: ['browserify']
 			}
 		}
 	});
-	grunt.loadNpmTasks('grunt-contrib-compass');
+	grunt.loadNpmTasks('grunt-sass');
+	grunt.loadNpmTasks('grunt-minify-html');
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.registerTask('default',['watch']);
+	grunt.registerTask('default', ['watch']);
 }

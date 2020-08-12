@@ -1,6 +1,6 @@
-node_modules
+node_modules/
 package-lock.json
-.sass-cache
-*.map
 
-.DS_Store
+# Temporary build files
+src/*.min.html
+src/*.css

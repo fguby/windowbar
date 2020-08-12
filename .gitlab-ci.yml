@@ -1,0 +1,33 @@
+stages:
+  - compile
+  - deploy
+
+dist:
+  stage: compile
+  image: node:current
+  cache:
+    paths:
+      - node_modules/
+  script:
+    - npm install
+    - grunt sass &
+    - grunt minifyHtml &
+    - wait
+    - grunt browserify
+  only:
+    - master
+  artifacts:
+    paths:
+      - dist/index.js
+
+pages:
+  stage: deploy
+  script:
+    - mkdir .public
+    - cp -r dist demo .public
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  only:
+    - master

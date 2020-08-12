@@ -8,7 +8,7 @@ const classes = require('component-classes');
 const ALT = 18;
 
 const html = function(s = '', cb){
-	const file = fs.readFileSync(path.join('dist', 'windowbar.html'), 'utf8');
+	const file = fs.readFileSync(path.join('src', 'windowbar.min.html'), 'utf8');
 	const html = domify(file);
 	
 	if (s === 'mac') return html.querySelector('.wb-mac');
@@ -16,7 +16,7 @@ const html = function(s = '', cb){
 	if (s === 'default') return html.querySelector('.wb-default');
 	return '';
 }
-const css = fs.readFileSync(path.join('dist', 'style.css'), 'utf8');
+const css = fs.readFileSync(path.join('src', 'style.css'), 'utf8');
 
 class Windowbar extends EventEmitter {
 	constructor(options = {}){

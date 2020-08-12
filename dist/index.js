@@ -918,6 +918,9 @@ function functionBindPolyfill(context) {
 
 },{}],6:[function(require,module,exports){
 (function (process){
+// .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
+// backported and transplited with Babel, with backwards-compat fixes
+
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -968,14 +971,6 @@ function normalizeArray(parts, allowAboveRoot) {
 
   return parts;
 }
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
 
 // path.resolve([from ...], to)
 // posix version
@@ -1092,37 +1087,120 @@ exports.relative = function(from, to) {
 exports.sep = '/';
 exports.delimiter = ':';
 
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
+exports.dirname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  if (path.length === 0) return '.';
+  var code = path.charCodeAt(0);
+  var hasRoot = code === 47 /*/*/;
+  var end = -1;
+  var matchedSlash = true;
+  for (var i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        if (!matchedSlash) {
+          end = i;
+          break;
+        }
+      } else {
+      // We saw the first non-path separator
+      matchedSlash = false;
+    }
   }
 
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
+  if (end === -1) return hasRoot ? '/' : '.';
+  if (hasRoot && end === 1) {
+    // return '//';
+    // Backwards-compat fix:
+    return '/';
   }
-
-  return root + dir;
+  return path.slice(0, end);
 };
 
+function basename(path) {
+  if (typeof path !== 'string') path = path + '';
 
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
+  var start = 0;
+  var end = -1;
+  var matchedSlash = true;
+  var i;
+
+  for (i = path.length - 1; i >= 0; --i) {
+    if (path.charCodeAt(i) === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          start = i + 1;
+          break;
+        }
+      } else if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // path component
+      matchedSlash = false;
+      end = i + 1;
+    }
+  }
+
+  if (end === -1) return '';
+  return path.slice(start, end);
+}
+
+// Uses a mixed approach for backwards-compatibility, as ext behavior changed
+// in new Node.js versions, so only basename() above is backported here
+exports.basename = function (path, ext) {
+  var f = basename(path);
   if (ext && f.substr(-1 * ext.length) === ext) {
     f = f.substr(0, f.length - ext.length);
   }
   return f;
 };
 
+exports.extname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  var startDot = -1;
+  var startPart = 0;
+  var end = -1;
+  var matchedSlash = true;
+  // Track the state of characters (if any) we see before our first dot and
+  // after any path separator we find
+  var preDotState = 0;
+  for (var i = path.length - 1; i >= 0; --i) {
+    var code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          startPart = i + 1;
+          break;
+        }
+        continue;
+      }
+    if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // extension
+      matchedSlash = false;
+      end = i + 1;
+    }
+    if (code === 46 /*.*/) {
+        // If this is our first dot, mark it as the start of our extension
+        if (startDot === -1)
+          startDot = i;
+        else if (preDotState !== 1)
+          preDotState = 1;
+    } else if (startDot !== -1) {
+      // We saw a non-dot and non-path separator before our dot, so we should
+      // have a good chance at having a non-empty extension
+      preDotState = -1;
+    }
+  }
 
-exports.extname = function(path) {
-  return splitPath(path)[3];
+  if (startDot === -1 || end === -1 ||
+      // We saw a non-dot character immediately before the dot
+      preDotState === 0 ||
+      // The (right-most) trimmed path component is exactly '..'
+      preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+    return '';
+  }
+  return path.slice(startDot, end);
 };
 
 function filter (xs, f) {
@@ -1342,7 +1420,7 @@ const classes = require('component-classes');
 const ALT = 18;
 
 const html = function(s = '', cb){
-	const file = "<div class=\"windowbar wb-mac\">\n\t<div class=\"windowbar-title\"></div>\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<polygon fill=\"#860006\" points=\"6,1 6,0 5,0 3,2 1,0 0,0 0,1 2,3 0,5 0,6 1,6 3,4 5,6 6,6 6,5 4,3\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 7 2\">\n\t\t\t\t<rect fill=\"#9d5615\" width=\"7\" height=\"2\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg class=\"fullscreen-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<path fill=\"#006413\" d=\"M0,1.4v3.8c0.4,0,0.8,0.3,0.8,0.8h3.8L0,1.4z\"/>\n\t\t\t\t<path fill=\"#006413\" d=\"M6,4.6V0.8C5.6,0.8,5.2,0.4,5.2,0H1.4L6,4.6z\"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"exit-fullscreen-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 6 6\">\n\t\t\t\t<path fill=\"#006413\" d=\"M3,0v2.5c0.3,0,0.5,0.2,0.5,0.5H6L3,0z\"/>\n\t\t\t\t<path fill=\"#006413\" d=\"M3,6V3.5C2.7,3.5,2.5,3.3,2.5,3H0L3,6z\"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"maximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 7.9 7.9\">\n\t\t\t\t<polygon fill=\"#006413\" points=\"7.9,4.5 7.9,3.4 4.5,3.4 4.5,0 3.4,0 3.4,3.4 0,3.4 0,4.5 3.4,4.5 3.4,7.9 4.5,7.9 4.5,4.5\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n\n<div class=\"windowbar wb-win\">\n\t<div class=\"windowbar-title\"></div>\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 1\">\n\t\t\t\t<rect fill=\"#000000\" width=\"10\" height=\"1\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg class=\"maximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<path fill=\"#000000\" d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z \"/>\n\t\t\t</svg>\n\t\t\t<svg class=\"unmaximize-svg\" x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<mask id=\"Mask\">\n\t\t\t\t\t<rect fill=\"#FFFFFF\" width=\"10\" height=\"10\"></rect>\n\t\t\t\t\t<path fill=\"#000000\" d=\"M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z\"/>\n\t\t\t\t\t<path fill=\"#000000\" d=\"M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z\"/>\n\t\t\t\t</mask>\n\t\t\t\t<path fill=\"#000000\" d=\"M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z\" mask=\"url(#Mask)\"/>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 12 12\">\n\t\t\t\t<polygon fill=\"#000000\" points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n\n<div class=\"windowbar wb-default\">\n\t<div class=\"windowbar-title\"></div>\n\t<div class=\"windowbar-controls\">\n\t\t<div class=\"windowbar-minimize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<rect fill=\"#000000\" width=\"10\" height=\"1\" x=\"0\" y=\"9\"></rect>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-maximize\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 10 10\">\n\t\t\t\t<path fill=\"#000000\" d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z \"/>\n\t\t\t</svg>\n\t\t</div>\n\t\t<div class=\"windowbar-close\">\n\t\t\t<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 12 12\">\n\t\t\t\t<polygon fill=\"#000000\" points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon>\n\t\t\t</svg>\n\t\t</div>\n\t</div>\n</div>\n";
+	const file = "<div class=\"windowbar wb-mac\"><div class=windowbar-title></div><div class=windowbar-controls><div class=windowbar-close><svg x=0px y=0px viewbox=\"0 0 6 6\"><polygon fill=#860006 points=\"6,1 6,0 5,0 3,2 1,0 0,0 0,1 2,3 0,5 0,6 1,6 3,4 5,6 6,6 6,5 4,3\"></polygon></svg></div><div class=windowbar-minimize><svg x=0px y=0px viewbox=\"0 0 7 2\"><rect fill=#9d5615 width=7 height=2></rect></svg></div><div class=windowbar-maximize><svg class=fullscreen-svg x=0px y=0px viewbox=\"0 0 6 6\"><path fill=#006413 d=M0,1.4v3.8c0.4,0,0.8,0.3,0.8,0.8h3.8L0,1.4z></path><path fill=#006413 d=M6,4.6V0.8C5.6,0.8,5.2,0.4,5.2,0H1.4L6,4.6z></path></svg><svg class=exit-fullscreen-svg x=0px y=0px viewbox=\"0 0 6 6\"><path fill=#006413 d=M3,0v2.5c0.3,0,0.5,0.2,0.5,0.5H6L3,0z></path><path fill=#006413 d=M3,6V3.5C2.7,3.5,2.5,3.3,2.5,3H0L3,6z></path></svg><svg class=maximize-svg x=0px y=0px viewbox=\"0 0 7.9 7.9\"><polygon fill=#006413 points=\"7.9,4.5 7.9,3.4 4.5,3.4 4.5,0 3.4,0 3.4,3.4 0,3.4 0,4.5 3.4,4.5 3.4,7.9 4.5,7.9 4.5,4.5\"></polygon></svg></div></div></div><div class=\"windowbar wb-win\"><div class=windowbar-title></div><div class=windowbar-controls><div class=windowbar-minimize><svg x=0px y=0px viewbox=\"0 0 10 1\"><rect fill=#000000 width=10 height=1></rect></svg></div><div class=windowbar-maximize><svg class=maximize-svg x=0px y=0px viewbox=\"0 0 10 10\"><path fill=#000000 d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z\"></path></svg><svg class=unmaximize-svg x=0px y=0px viewbox=\"0 0 10 10\"><mask id=Mask><rect fill=#FFFFFF width=10 height=10></rect><path fill=#000000 d=\"M 3 1 L 9 1 L 9 7 L 8 7 L 8 2 L 3 2 L 3 1 z\"></path><path fill=#000000 d=\"M 1 3 L 7 3 L 7 9 L 1 9 L 1 3 z\"></path></mask><path fill=#000000 d=\"M 2 0 L 10 0 L 10 8 L 8 8 L 8 10 L 0 10 L 0 2 L 2 2 L 2 0 z\" mask=url(#Mask)></path></svg></div><div class=windowbar-close><svg x=0px y=0px viewbox=\"0 0 12 12\"><polygon fill=#000000 points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon></svg></div></div></div><div class=\"windowbar wb-default\"><div class=windowbar-title></div><div class=windowbar-controls><div class=windowbar-minimize><svg x=0px y=0px viewbox=\"0 0 10 10\"><rect fill=#000000 width=10 height=1 x=0 y=9></rect></svg></div><div class=windowbar-maximize><svg x=0px y=0px viewbox=\"0 0 10 10\"><path fill=#000000 d=\"M 0 0 L 0 10 L 10 10 L 10 0 L 0 0 z M 1 1 L 9 1 L 9 9 L 1 9 L 1 1 z\"></path></svg></div><div class=windowbar-close><svg x=0px y=0px viewbox=\"0 0 12 12\"><polygon fill=#000000 points=\"12,1 11,0 6,5 1,0 0,1 5,6 0,11 1,12 6,7 11,12 12,11 7,6\"></polygon></svg></div></div></div>";
 	const html = domify(file);
 	
 	if (s === 'mac') return html.querySelector('.wb-mac');
