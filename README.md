@@ -4,6 +4,8 @@ Emulate window title bar in three different styles. See the [demo](https://katac
 
 `npm install windowbar`
 
+![example screenshot](preview.png)
+
 # Usage
 
 For use in browserify, electron, or a similar environment. Plain javascript:
@@ -28,7 +30,7 @@ The constructor accepts an options object with these properties:
 * `fixed` (default `false`): Affixes to the top and floats above the rest of the content so only the buttons and title are visible. Ignores `transparent` rule.
 * `style` (defaults to current OS, or `default` if unrecognized): Possible values are `mac`, `win`, or `default`.
 * `tall`: (default `false`, mac only): Makes the windowbar taller than usual, with the controls slightly inset.
-* `title`: Sets the title. Can be changed later with `updateTitle(t)`.
+* `title`: (string) Sets the title. Can be changed later with `updateTitle(t)`.
 * `transparent` (default `false`): Transparent background for an overlayed effect.
 
 
