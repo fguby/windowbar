@@ -10,10 +10,7 @@ dist:
       - node_modules/
   script:
     - npm install
-    - grunt sass &
-    - grunt minifyHtml &
-    - wait
-    - grunt browserify
+    - npm run dist
   only:
     - master
   artifacts:
